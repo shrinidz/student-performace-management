@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Admin Login Page</title>
+		<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, width=device-width">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<link rel="stylesheet" href="LoginPage.css"/>
+		<link rel="stylesheet" type="text/css" href="sweetalert.css">
+		<script src="sweetalert.min.js"></script>
+        <!-- jQuery library -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<!-- Latest compiled JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<style>
+			html {
+				height: 100%;
+			}
+			body {
+				background-image: url("http://elearningindustry.com/wp-content/uploads/2016/02/top-10-psychology-books-elearning-professional-read.jpg");
+				background-size: cover;            
+				background-repeat: no-repeat;
+			}
+
+			.navbar { 
+				font-size: 40px; 
+				background:rgba(0,0,0,0.5);                           
+			} 	
+			#navBarText {
+				font-size: 40px; 
+			}	
+		</style>
+		
+		<script>
+			var username;
+			var password
+			function lgn(){    
+				var requestObject1= new XMLHttpRequest(); 
+				requestObject1.onreadystatechange= function(){
+					if (requestObject1.readyState===4){
+						if( requestObject1.status===200 ){       
+							window.location = "enterMarks";
+						}
+						else{
+							sweetAlert("Failed to login", "Incorrect credentials", "error");
+						}
+					}
+					else{
+						
+					}
+				}
+				
+				username= document.getElementById("username").value;
+				password= document.getElementById("password").value;
+				if(username==""||password==""){
+					//alert("enter the credentials");
+					sweetAlert("Failed to login", "Enter credentials", "error");
+					return;
+				}
+				requestObject1.open('POST', " https://auth.cockerel94.hasura-app.io/login ", true);
+				requestObject1.withCredentials=true;
+				requestObject1.setRequestHeader('Content-type','application/json');
+				requestObject1.send(JSON.stringify({username:username,password:password}));
+			};
+			
+		</script>
+	</head>
+	<body >
+		
+		<nav class="navbar navbar-inverse">
+			<div class="navbar-header">
+				<button type="button" data-target="#navbarCollapse" data-toggle="collapse" class="navbar-toggle">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a href="#" class="navbar-left"><img src="https://icons.iconarchive.com/icons/iconshock/perspective-general/64/administrator-icon.png"></a>        
+				<a href="#" class="navbar-brand" id="navBarText">Admin Login</a>
+			</div>
+			<div id="navbarCollapse" class="collapse navbar-collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<a href="/" class="navbar-left"><img src="https://icons.iconarchive.com/icons/graphicloads/100-flat/64/home-icon.png"></a>        
+					<li><a href="/">Home</a></li>
+				</ul>
+			</div>
+		</nav>
+		
+
+		<div id="login">
+			<form>
+				<h2>Admin Login</h2>
+				<input type="text" id="username" placeholder="Enter username admin1"/>
+				<input type="password" id="password" placeholder="Enter Password iamadmin" name="userPass"/>
+				<input type="button"  class="btn btn-primary btn-lg" id="adminLogin" value="Login" onclick="lgn()"/>
+			</form>
+		</div>
+	</body>
+</html>

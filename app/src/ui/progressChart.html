@@ -1,0 +1,652 @@
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, width=device-width">
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<title>Performance Analysis</title>
+<style>
+	<!--@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,700);-->
+	
+	body {
+	    background-image: url("http://wallpapercave.com/wp/uEhiDYh.jpg");
+	    background-size: cover;            
+        background-repeat: no-repeat;
+	}
+    .navbar { 
+        font-size: 40px; 
+    } 	
+    #navBarText {
+        font-size: 40px; 
+    }
+	
+	main {
+		width: 550px;
+		margin: 10px auto;
+		padding: 10px 20px 30px 20px;
+		background: rgba(255,255,255,.3);
+		box-shadow: 0 3px 5px rgba(0,0,0,0.2);
+	}
+
+	p {
+		margin-top: 2rem;
+		font-size: 13px;
+	}
+	#bar-chart {
+		width: 500px;
+		height: 300px;
+		position: relative;
+	}
+
+	#bar-chart::before {
+		content: "";
+		position: absolute;
+		display: block;
+		width: 375px;
+		height: 30px;
+		left: 50px;
+		top: 258px;
+		background: #FAFAFA;
+		box-shadow: 1px 1px 0 0 #DDD;
+	}
+	#pie-chart {
+		width: 500px;
+		height: 250px;
+		position: relative;
+	}
+	#pie-chart::before {
+		content: "";
+		position: absolute;
+		display: block;
+		width: 180px;
+		height: 150px;
+		left: 315px;
+		top: 0;
+		background: #FAFAFA;
+		box-shadow: 1px 1px 0 0 #DDD;
+	}
+	#pie-chart::after {
+		content: "";
+		position: absolute;
+		display: block;
+		top: 260px;
+		left: 70px;
+		width: 170px;
+		height: 2px;
+		background: rgba(0,0,0,0.1);
+		border-radius: 50%;
+		box-shadow: 0 0 3px 4px rgba(0,0,0,0.1);
+	}
+
+	div.table-title {
+		margin: auto;
+		display: block;
+		padding:5px;
+		width: 60%;
+		text-align: center;
+	}
+
+	.table-title p {
+		color: #fafafa;
+		font-size: 30px;
+		font-weight: 400;
+		font-style:normal;
+		font-family: "Roboto", helvetica, arial, sans-serif;
+		text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.1);
+	}
+	@media only screen and (max-device-width: 480px) {
+		main {
+			width: 100%;
+		}
+		#bar-chart {
+			width: 95%;
+			height: 400px;
+		}
+		#bar-chart::before {
+			width: 95%;
+			left: 5%;
+			top: 358px;
+		}
+		#pie-chart {
+			width: 80%;
+			height: 250px;
+		}
+		#pie-chart::before {
+			width: 130px;
+			left: 65%;
+		}
+		#navBarText {
+			font-size: 20px;
+			color: black; 
+		}	
+		.table-title p {
+			font-size: 15px;
+		}
+	}
+</style>
+
+<script>
+	
+	var userphysics=0;
+	var userchemistry=0;
+	var usermathematics=0;
+	var userbiology=0;
+	var userenglish=0;
+	var usercomputerscience=0;
+	
+	var physicsavg=0;
+	var chemistryavg=0;
+	var mathematicsavg=0;
+	var biologyavg=0;
+	var englishavg=0;
+	var computerscienceavg=0;
+	
+	var physicsmax=0;
+	var chemistrymax=0;
+	var mathematicsmax=0;
+	var biologymax=0;
+	var englishmax=0;
+	var computersciencemax=0;
+	var id = Number(checkCookie()) ;
+	var barData;
+		
+	function getCookie(cname) {
+		var name = cname + "=";
+		var decodedCookie = decodeURIComponent(document.cookie);
+		var ca = decodedCookie.split(';');
+		for(var i = 0; i < ca.length; i++) {
+			var c = ca[i];
+			while (c.charAt(0) == ' ') {
+				c = c.substring(1);
+			}
+			if (c.indexOf(name) == 0) {
+				return c.substring(name.length, c.length);
+			}
+		}
+		return "";
+	}
+	
+	function checkCookie() {
+		return getCookie("userId");
+   	}
+	
+	function pulluser(){
+		var request= new XMLHttpRequest(); 
+		request.onreadystatechange= function(){
+            if(request.readyState===XMLHttpRequest.DONE && request.status===200){
+				//console.log(this.responseText);
+				console.log("Retrieved candiadate data");
+				var response=JSON.parse(this.responseText);
+				//console.log(response);
+				userphysics=Number(response[0].physics);
+				userchemistry=Number(response[0].chemistry);
+				usermathematics=Number(response[0].mathematics);
+				userbiology=Number(response[0].biology);
+				userenglish=Number(response[0].english);
+				usercomputerscience=Number(response[0].computer_science);
+				
+				pullphysics();
+            }
+			else{
+			}
+        }
+		request.open('POST', "https://data.cockerel94.hasura-app.io/v1/query", true);
+		request.withCredentials=true;
+		request.setRequestHeader('Content-type','application/json');
+		request.send(JSON.stringify({  type:"select",  args:{    table:"Result",    columns:[ "*" ] , where:{"id":id}}}));
+	};
+		
+	function pullphysics(){
+		var request= new XMLHttpRequest(); 
+		request.onreadystatechange= function(){
+            if(request.readyState===XMLHttpRequest.DONE && request.status===200){
+				//console.log(this.responseText);
+				console.log("Retrieved physics");
+				var response=JSON.parse(this.responseText);
+				//console.log(response);
+				var avg=0;
+				var max=0
+				for(i=0;i<response.length;i++){
+					avg+=Number(response[i].physics);
+					if(max<response[i].physics)
+					max=response[i].physics;
+				}
+				physicsavg = avg/response.length;
+				console.log(avg/response.length);
+				console.log(max);
+				physicsmax = max;
+				pullchemistry();
+            }
+			else{
+			}
+        }
+		request.open('POST', "https://data.cockerel94.hasura-app.io/v1/query", true);
+		request.withCredentials=true;
+		request.setRequestHeader('Content-type','application/json');
+		request.send(JSON.stringify({  type:"select",  args:{    table:"Result",    columns:[ "physics"]}}));
+	};
+		
+	function pullchemistry(){
+		var request= new XMLHttpRequest(); 
+		request.onreadystatechange= function(){
+            if(request.readyState===XMLHttpRequest.DONE && request.status===200){
+				//console.log(this.responseText);
+				console.log("Retrieved chemistry");
+				var response=JSON.parse(this.responseText);
+				//console.log(response);
+				var avg=0;
+				var max=0
+				for(i=0;i<response.length;i++){
+					avg+=Number(response[i].chemistry);
+					if(max<response[i].chemistry)
+					max=response[i].chemistry;
+				}
+				chemistryavg = avg/response.length;
+				console.log(avg/response.length);
+				console.log(max);
+				chemistrymax = max;
+				pullmathematics();
+            }
+			else{
+			}
+        }
+		request.open('POST', "https://data.cockerel94.hasura-app.io/v1/query", true);
+		request.withCredentials=true;
+		request.setRequestHeader('Content-type','application/json');
+		request.send(JSON.stringify({  type:"select",  args:{    table:"Result",    columns:[ "chemistry"]}}));
+	};
+		
+	function pullmathematics(){
+		var request= new XMLHttpRequest(); 
+		request.onreadystatechange= function(){
+            if(request.readyState===XMLHttpRequest.DONE && request.status===200){
+				//console.log(this.responseText);
+				console.log("Retrieved mathematics");
+				var response=JSON.parse(this.responseText);
+				//console.log(response);
+				var avg=0;
+				var max=0
+				for(i=0;i<response.length;i++){
+					avg+=Number(response[i].mathematics);
+					if(max<response[i].mathematics)
+					max=response[i].mathematics;
+				}
+				mathematicsavg = avg/response.length;
+				console.log(avg/response.length);
+				console.log(max);
+				mathematicsmax = max;
+				pullbiology();
+            }
+			else{
+			}
+        }
+		request.open('POST', "https://data.cockerel94.hasura-app.io/v1/query", true);
+		request.withCredentials=true;
+		request.setRequestHeader('Content-type','application/json');
+		request.send(JSON.stringify({  type:"select",  args:{    table:"Result",    columns:[ "mathematics"]}}));
+	};
+	
+	function pullbiology(){
+		var request= new XMLHttpRequest(); 
+		request.onreadystatechange= function(){
+            if(request.readyState===XMLHttpRequest.DONE && request.status===200){
+				//console.log(this.responseText);
+				console.log("Retrieved biology");
+				var response=JSON.parse(this.responseText);
+				//console.log(response);
+				var avg=0;
+				var max=0
+				for(i=0;i<response.length;i++){
+					avg+=Number(response[i].biology);
+					if(max<response[i].biology)
+					max=response[i].biology;
+				}
+				biologyavg = avg/response.length;
+				console.log(avg/response.length);
+				console.log(max);
+				biologymax = max;
+				pullenglish();
+            }
+			else{
+			}
+        }
+		request.open('POST', "https://data.cockerel94.hasura-app.io/v1/query", true);
+		request.withCredentials=true;
+		request.setRequestHeader('Content-type','application/json');
+		request.send(JSON.stringify({  type:"select",  args:{    table:"Result",    columns:[ "biology"]}}));
+	};
+		
+	function pullenglish(){
+		var request= new XMLHttpRequest(); 
+		request.onreadystatechange= function(){
+            if(request.readyState===XMLHttpRequest.DONE && request.status===200){
+				//console.log(this.responseText);
+				console.log("Retrieved english");
+				var response=JSON.parse(this.responseText);
+				//console.log(response);
+				var avg=0;
+				var max=0
+				for(i=0;i<response.length;i++){
+					avg+=Number(response[i].english);
+					if(max<response[i].english)
+					max=response[i].english;
+				}
+				englishavg = avg/response.length;
+				console.log(avg/response.length);
+				console.log(max);
+				englishmax = max;
+				pullcomputerscience();
+            }
+			else{
+				
+			}
+        }
+		request.open('POST', "https://data.cockerel94.hasura-app.io/v1/query", true);
+		request.withCredentials=true;
+		request.setRequestHeader('Content-type','application/json');
+		request.send(JSON.stringify({  type:"select",  args:{    table:"Result",    columns:[ "english"]}}));
+	};
+		
+	function pullcomputerscience(){
+		var request= new XMLHttpRequest(); 
+		request.onreadystatechange= function(){
+            if(request.readyState===XMLHttpRequest.DONE && request.status===200){
+				//console.log(this.responseText);
+				console.log("Retrieved computer science");
+				var response=JSON.parse(this.responseText);
+				//console.log(response);
+				var avg=0;
+				var max=0
+				for(i=0;i<response.length;i++){
+					avg+=Number(response[i].computer_science);
+					if(max<response[i].computer_science)
+					max=response[i].computer_science;
+				}
+				computerscienceavg = avg/response.length;
+				console.log(avg/response.length);
+				console.log(max);
+				computersciencemax= max;
+				drawing();
+				pullSum();
+            }
+			else{
+			}
+        }
+		request.open('POST', "https://data.cockerel94.hasura-app.io/v1/query", true);
+		request.withCredentials=true;
+		request.setRequestHeader('Content-type','application/json');
+		request.send(JSON.stringify({  type:"select",  args:{    table:"Result",    columns:[ "computer_science"]}}));
+	};
+	
+	function drawing(){
+		barData = google.visualization.arrayToDataTable([
+			['Subjects', 'Your\'s Marks', 'Average marks', 'Highest marks'],
+			['Physics',  userphysics,      physicsavg, physicsmax],
+			['Chemistry',  userchemistry,      chemistryavg, chemistrymax],
+			['Mathematics',  usermathematics,       mathematicsavg, mathematicsmax],
+			['Biology',  userbiology,      biologyavg, biologymax],
+			['English',  userenglish,      englishavg, englishmax],
+			['Computer sc.',  usercomputerscience,      computerscienceavg, computersciencemax]
+
+		]);
+  
+	    var barOptions = {
+			focusTarget: 'category',
+			backgroundColor: 'transparent',
+			colors: ['cornflowerblue', 'tomato', 'orange'],
+			fontName: 'Open Sans',
+			chartArea: {
+				left: 50,
+				top: 10,
+				width: '75%',
+				height: '70%'
+			},
+			bar: {
+				groupWidth: '80%'
+			},
+			hAxis: {
+				textStyle: {
+					fontSize: 11
+				}
+			},
+			vAxis: {
+				minValue: 0,
+				maxValue: 100,
+				baselineColor: '#DDD',
+				gridlines: {
+					color: '#DDD',
+					count: 3
+				},
+				textStyle: {
+					fontSize: 11
+				}
+			},
+			legend: {
+				position: 'bottom',
+				textStyle: {
+					fontSize: 12
+				}
+			},
+			animation: {
+				duration: 1200,
+				easing: 'out',
+				startup: true
+			}
+		};
+		// draw bar chart twice so it animates
+		var barChart = new google.visualization.ColumnChart(document.getElementById('bar-chart'));
+		//barChart.draw(barZeroData, barOptions);
+		barChart.draw(barData, barOptions);
+	}
+	       
+	var range1 = 0;
+	var range2 = 0;
+	var range3 = 0;
+	var range4 = 0;
+	var range5 = 0;
+	var range6 = 0;
+	
+	function pullSum(){
+		var request= new XMLHttpRequest(); 
+		request.onreadystatechange= function(){
+            if(request.readyState===XMLHttpRequest.DONE && request.status===200){
+				//console.log(this.responseText);
+				var response=JSON.parse(this.responseText);
+				//console.log(response);
+				var sum=0;
+				for(i=0;i<response.length;i++){
+					sum+=Number(response[i].physics);
+					sum+=Number(response[i].chemistry);
+					sum+=Number(response[i].mathematics);
+					sum+=Number(response[i].biology);
+					sum+=Number(response[i].english);
+					sum+=Number(response[i].computer_science);
+                    sum = sum/6;
+					//console.log(sum);
+					if(sum<=50)	{	range1++;	}
+					
+					else if(sum<=60){   range2++;	}
+					
+					else if(sum<=70){	range3++;	}
+					
+					else if(sum<=80){   range4++;	}
+					
+					else if(sum<=90){	range5++;	}
+					
+					else if(sum<=100){  range6++;	}
+					
+                    sum = 0;
+				}
+
+				drawPieChart();
+				suggestions();
+            }
+			else{
+			}
+        }
+		request.open('POST',"https://data.cockerel94.hasura-app.io/v1/query", true);
+		request.withCredentials=true;
+		request.setRequestHeader('Content-type','application/json');
+		request.send(JSON.stringify({  type:"select",  args:{    table:"Result",    columns:["*"]}}));
+	};
+	
+	function drawPieChart() {
+		// BEGIN PIE CHART
+		// pie chart data
+		var pieData = google.visualization.arrayToDataTable([
+			['Subject', 'Percentage'],
+			['91%-100%', range6],
+			['81%-90%', range5],
+			['71%-80%', range4],
+			['61%-70%', range3],
+			['51%-60%', range2],
+			['0%-50%', range1]
+		]);
+		// pie chart options
+		var pieOptions = {
+			backgroundColor: 'transparent',
+			pieHole: 0.4,
+			colors: [ "cornflowerblue",
+				"olivedrab",
+				"orange",
+				"tomato",
+				"crimson",
+				"purple",
+				"turquoise",
+				"forestgreen",
+				"navy",
+				"gray"],
+			pieSliceText: 'value',
+			tooltip: {
+				text: 'percentage'
+			},
+			fontName: 'Open Sans',
+			chartArea: {
+				width: '100%',
+				height: '94%'
+			},
+			legend: {
+				textStyle: {
+					fontSize: 15
+				}
+			}
+		  };
+		  // draw pie chart
+		  var pieChart = new google.visualization.PieChart(document.getElementById('pie-chart'));
+		  pieChart.draw(pieData, pieOptions);	
+	}
+
+	function suggestions() {
+        var arr = [1, 1, 1, 1, 1, 1];
+        var bad = 0;
+        if (userphysics < physicsavg){
+			arr[0] = 0;
+			bad++;
+        }
+        if (userchemistry < chemistryavg){
+			arr[1] = 0;
+			bad++;
+        }
+        if (usermathematics < mathematicsavg){
+			arr[2] = 0;
+			bad++;
+        }
+        if (userbiology < biologyavg){
+			arr[3] = 0;
+			bad++;
+        }
+        if (userenglish < englishavg){
+			arr[4] = 0;
+			bad++;
+        }
+		if (usercomputerscience < computerscienceavg){
+			arr[5] = 0;
+			bad++;
+        }
+        if(bad > 0){
+			var sugg = 'Needs to pay more attention in ';         
+        }
+        else{
+			var sugg = 'Well done, marks in all subjects are above average!'
+        }
+        
+		var count = 0;
+        for (var i=0; i<6; i++){
+			if(arr[i] == 0){
+				count++;
+				if(i == 0)	   {	sugg += 'Physics';		}
+				
+				else if(i == 1){	sugg += 'Chemistry';	}
+				
+				else if(i == 2){	sugg += 'Mathematics';  }
+				
+				else if(i == 3){	sugg += 'Biology';      }
+				
+				else if(i == 4){	sugg += 'English';      }
+				
+				else           {	sugg += 'Computer Science';		}
+				
+				if (bad-count > 1){
+					sugg += ', ';           
+				}
+				else if(bad-count == 1){
+					sugg += ' and ';           
+				}
+				else{
+					sugg += ".";           
+				}          
+			}
+        }
+        console.log('suggestion: '+sugg);
+        console.log('bad '+bad);
+        console.log(arr);
+        $('#suggestions').html('Suggestions: '+sugg);
+         
+    }
+	
+	google.load("visualization", "1", {packages:["corechart"]});
+	google.setOnLoadCallback(drawCharts);
+	
+	function drawCharts() {
+		pulluser();
+	}
+
+</script>
+
+<nav class="navbar navbar-default" style="background: rgba(255,255,255,.5)">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+        <button type="button" data-target="#navbarCollapse" data-toggle="collapse" class="navbar-toggle">
+			<span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a href="#" class="navbar-left"><img src="https://icons.iconarchive.com/icons/custom-icon-design/pretty-office-8/64/Bar-chart-icon.png"></a>        
+        <a href="#" class="navbar-left" id="navBarText" style="color:white;">Graphical Analysis</a>
+    </div>
+    <!-- Collection of nav links and other content for toggling -->
+    <div id="navbarCollapse" class="collapse navbar-collapse">
+        <ul class="nav navbar-nav navbar-right">
+			<a href="/" class="navbar-left"><img src="https://icons.iconarchive.com/icons/graphicloads/100-flat/64/home-icon.png"></a>        
+            <li><a href="/" style="color:white;">Home</a></li>
+        </ul>
+    </div>
+</nav>
+
+<main >
+	<h2 style="color:white;">Performance Charts</h2>
+	<h5 style="color:white;">Theme 1 (Subject wise)</h5>
+	<div id="bar-chart"></div>
+
+	<h5 style="color:white;">Theme 2 (Student Distribution in different Percentage Range)</h5>
+	<div id="pie-chart"></div>
+</main>
+
+<div class="table-title">
+	<p id="suggestions" >No suggestions available</p>
+</div>

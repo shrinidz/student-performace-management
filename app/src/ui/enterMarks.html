@@ -1,0 +1,245 @@
+<link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<title>Enter Marks</title>
+<style type="text/css">
+	.form-style-8{
+		font-family: 'Open Sans Condensed', arial, sans;
+		width: 500px;
+		padding: 30px;
+		background: #FFFFFF;
+		margin: 50px auto;
+		box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.22);
+		-moz-box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.22);
+		-webkit-box-shadow:  0px 0px 15px rgba(0, 0, 0, 0.22);
+
+	}
+	.form-style-8 h2{
+		background: #4D4D4D;
+		text-transform: uppercase;
+		font-family: 'Open Sans Condensed', sans-serif;
+		color: #797979;
+		font-size: 18px;
+		font-weight: 100;
+		padding: 20px;
+		margin: -30px -30px 30px -30px;
+	}
+	.form-style-8 input[type="text"],
+	.form-style-8 select
+	{
+		box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		-moz-box-sizing: border-box;
+		outline: none;
+		display: block;
+		width: 100%;
+		padding: 7px;
+		border: none;
+		border-bottom: 1px solid #ddd;
+		background: transparent;
+		margin-bottom: 10px;
+		font: 16px Arial, Helvetica, sans-serif;
+		height: 45px;
+	}
+	.form-style-8 input[type="button"], #pushresult,
+	.form-style-8 input[type="submit"]{
+		-moz-box-shadow: inset 0px 1px 0px 0px #45D6D6;
+		-webkit-box-shadow: inset 0px 1px 0px 0px #45D6D6;
+		box-shadow: inset 0px 1px 0px 0px #45D6D6;
+		background-color: #2CBBBB;
+		border: 1px solid #27A0A0;
+		display: inline-block;
+		cursor: pointer;
+		color: #FFFFFF;
+		font-family: 'Open Sans Condensed', sans-serif;
+		font-size: 14px;
+		padding: 8px 18px;
+		text-decoration: none;
+		text-transform: uppercase;
+	}
+	.form-style-8 input[type="button"]:hover, #pushresult:hover,
+	.form-style-8 input[type="submit"]:hover {
+		background:linear-gradient(to bottom, #34CACA 5%, #30C9C9 100%);
+		background-color:#34CACA;
+	}
+</style>
+<script src="sweetalert.min.js"></script>
+<link rel="stylesheet" type="text/css" href="sweetalert.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<style>
+	body {
+		background-image: url("http://wallpaperscraft.com/image/line_background_black_bending_69478_2560x1600.jpg");
+		background-size: cover;            
+		background-repeat: no-repeat;
+		background-position: center center;   
+	}
+	.navbar { 
+		font-size: 40px; 
+		background:rgba(0,0,0,0.5)
+	} 	
+	#navBarText {
+		font-size: 40px; 
+	}	
+</style>
+<script type="text/javascript">
+	//auto expand textarea
+	function adjust_textarea(h) {
+		h.style.height = "20px";
+		h.style.height = (h.scrollHeight)+"px";
+	}
+		
+	function validate(){
+		var id= document.getElementById("id").value;
+		var physics= document.getElementById("physics").value;
+		var chemistry= document.getElementById("chemistry").value;
+		var mathematics= document.getElementById("mathematics").value;
+		var biology= document.getElementById("biology").value;
+		var english= document.getElementById("english").value;
+		var computer_science= document.getElementById("computer_science").value;
+		var remarks= document.getElementById("remarks").value;
+		if(id == ""){
+			sweetAlert("Response not sent", "Student ID can not be empty", "error");
+			return;
+		}
+		else if(isNaN(id)){
+			sweetAlert("Response not sent", "Student ID should be number", "error");
+		}
+		else if(id%1!==0){	
+			sweetAlert("Response not sent", "Student ID should be an integer", "error");	      
+        }
+		else if(physics==""||chemistry==""||mathematics==""||biology==""||english==""||computer_science==""){
+			sweetAlert("Oops...", "You left some marks field empty", "error");	      
+		}
+		else if(isNaN(physics)||isNaN(chemistry)||isNaN(mathematics)||isNaN(biology)||isNaN(english)||isNaN(computer_science)){
+		    sweetAlert("Response not sent", "Marks should be number", "error");	
+	    }  		
+		else if(physics%1!==0||chemistry%1!==0||mathematics%1!==0||biology%1!==0||english%1!==0||computer_science%1!==0){
+			sweetAlert("Marks should be Integer", "Marks in each subject should be an integer in range of 0-100", "error");		
+		}		
+		else if(physics<0||physics>100||chemistry<0||chemistry>100||mathematics<0||mathematics>100||biology<0||biology>100||english<0||english>100||computer_science<0||computer_science>100){
+			sweetAlert("Marks out of range", "Marks in each subject should be in range of 0-100", "error");		
+		}			
+		else{
+		  pushresult();
+		}
+	}
+	
+	function pushresult(){    
+			console.log("executed");
+			var request= new XMLHttpRequest(); 
+			request.onreadystatechange= function(){
+				if(request.readyState===XMLHttpRequest.DONE ){
+					if(request.status===200){
+						console.log(this.responseText);   
+						//sweetAlert("Your response sent", "Click Ok to enter marks for another student", "success");
+						swal({
+							title: "Your response sent",
+							text: 'Click next to enter marks for another student',
+							type: "success",
+							confirmButtonColor: "#DD6B55",
+							confirmButtonText: "Next",
+							cancelButtonText: "Log out",
+							closeOnConfirm: false
+						},
+						function(){
+							flag = 1;
+							if(flag == 1)
+							{
+								window.location = 'enterMarks';
+							} 
+							
+						});	    	
+
+					}else{
+						//sweetAlert("Response not sent", 'No student with id '+id+' has registered or you have already sent your response', "error");
+						if(JSON.parse(this.responseText).error=='Uniqueness violation. duplicate key value violates unique constraint "Result_pkey"'){
+							sweetAlert("Response already sent",'Marks of student with id '+id+' has already recorded', "error");
+						}
+						else if(JSON.parse(this.responseText).error=='Foreign key violation. insert or update on table "Result" violates foreign key constraint "Result_id_fkey"'){
+							sweetAlert("Response not sent", 'No student with id '+id+' has registered', "error");
+						}
+						else{
+							sweetAlert("Response not sent",JSON.parse(this.responseText).error, "error");
+						}
+						
+					}
+					
+				}
+				else{
+					//console.log(this.responseText);
+				}
+			}
+			var id= Number(document.getElementById("id").value);
+			var physics= Number(document.getElementById("physics").value);
+			var chemistry= Number(document.getElementById("chemistry").value);
+			var mathematics= Number(document.getElementById("mathematics").value);
+			var biology= Number(document.getElementById("biology").value);
+			var english= Number(document.getElementById("english").value);
+			var computer_science= Number(document.getElementById("computer_science").value);
+			var remarks= document.getElementById("remarks").value;
+			request.open('POST', "https://data.cockerel94.hasura-app.io/v1/query", true);
+			request.withCredentials=true;
+			request.setRequestHeader('Content-type','application/json');
+			request.setRequestHeader('Authorization','Bearer');
+			request.send(JSON.stringify({  type:"insert",  args:{    table:"Result",    objects:[    {    id:id,    physics:physics,	chemistry:chemistry,	mathematics:mathematics,	biology:biology,	english:english,	computer_science:computer_science,	remarks:remarks    }   ]   }}));
+	};
+	
+	function lgo(){
+		var request= new XMLHttpRequest();
+		request.onreadystatechange= function(){
+			if(request.readyState===XMLHttpRequest.DONE && request.status===200){  
+				console.log(this.responseText);
+				console.log("Sucessfully Logged Out");
+				//alert("Sucessfully Logged Out");
+				window.location = "/";
+			}
+			else{
+			}
+		}
+		request.open('GET'," https://auth.cockerel94.hasura-app.io/user/logout ", true);
+		request.withCredentials=true;
+		request.send(null);
+	};
+	
+</script>
+
+<body>
+	<nav class="navbar navbar-inverse">
+		<!-- Brand and toggle get grouped for better mobile display -->
+		<div class="navbar-header">
+			<button type="button" data-target="#navbarCollapse" data-toggle="collapse" class="navbar-toggle">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="#" class="navbar-left"><img src="https://icons.iconarchive.com/icons/iconshock/perspective-general/64/administrator-icon.png"></a>        
+			<a href="#" class="navbar-brand" id="navBarText">Administrator</a>
+		</div>
+		<!-- Collection of nav links and other content for toggling -->
+		<div id="navbarCollapse" class="collapse navbar-collapse">
+			<ul class="nav navbar-nav navbar-right">
+			<div class="navbar-left" id="logout"><img src="https://icons.iconarchive.com/icons/alecive/flatwoken/64/Apps-Dialog-Logout-icon.png" onclick="lgo()"></div>        
+				<li><a onclick="lgo()">Log Out</a></li>
+			</ul>
+		</div>
+	</nav>
+
+	<!-- jQuery library -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<!-- Latest compiled JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+	<div class="form-style-8">
+	  <h2>Enter The Marks</h2>
+		<input type="text"  placeholder="Student Id" id="id"/>
+		<input type="text"  placeholder="Physics" id="physics"/>
+		<input type="text"  placeholder="Chemistry" id="chemistry"/>
+		<input type="text"  placeholder="Mathematics" id="mathematics"/>
+		<input type="text"  placeholder="Biology" id="biology"/>
+		<input type="text"  placeholder="English" id="english"/>
+		<input type="text"  placeholder="Computer Science" id="computer_science"/>
+		<input type="text"  placeholder="remarks" id="remarks"/>
+		<center><button id="pushresult" onclick="validate()">Store Result</button><br><br></center>
+	</div>
+</body>

@@ -1,0 +1,48 @@
+<html>
+	<head>
+		<link rel="stylesheet" href="LoginPage.css"/>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<title>Home page</title>
+		<style>
+			body {
+			    background-image: url("http://az616578.vo.msecnd.net/files/2016/05/22/635994817168223213-230785194_why-you-should-read-and-re-read-these-high-school-books-as-an-adult.jpeg");
+			    background-size: cover;            
+                background-repeat: no-repeat;
+			}
+			#title {
+			   font-size: 70px;
+			   text-align: center;
+			}
+			.buttonHolder{ 
+			   text-align: center;
+			   left: 50%;
+			}
+			.btn{
+			   width: 25%;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="title">Student Performence Managment System</div></br></br>
+		<div class="buttonHolder">
+			<form action="LoginPage" method="get">
+				<br><br><center><input type="submit" value="View Result" class="btn btn-primary btn-lg"></center>
+			</form>
+			<form action="adminLogin" method="get">
+				<center><input type="submit" value="Admin Login" class="btn btn-primary btn-lg"></center>
+			</form>
+			<form action="signUp" method="get">
+				<center><input type="submit" id="login-btn" value="Registration" class="btn btn-primary btn-lg"></center>
+			</form>
+			<form action="blogs" method="get">
+				<input type="button" class="btn btn-primary btn-lg" value="Blogs" onclick="location.href = 'https://medium.com/@ankur.pandey1996/1-1-app-idea-e73838d0829b';">
+			</form>
+			
+		</div>
+		
+		<!-- jQuery library -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<!-- Latest compiled JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	</body>
+</html>
